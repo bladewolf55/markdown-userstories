@@ -20,23 +20,29 @@ And for fun, let's store each story in Markdown instead of a database.
 
 ```markdown
 ---
-CreatedOn:		20190523-12:15
-StartedOn:		20190524T09:00  <= Use this initially, it's ISO standard
-CompletedOn:	2019-05-24 16:33
+CreatedOn:    20190523-12:15
+# Use this initially, it's ISO standard
+StartedOn:    20190524T09:00  
+CompletedOn:  2019-05-24 16:33
 # Open, In Process, Waiting On, Done
-Status:			Done
+Status:       Done
+Sequence:     5
+Estimate:     XL
 ---
 
 # As a {ROLE}, {WANT} {WHY}
 
 ## Discussion
 
-
 ## Acceptance Criteria
-
 
 ```
 
+## Nice to Have
 
+*	Attachments
+*	Tasks with time estimates
+*	CreatedBy, AssignedTo
+*	Authentication
 
 
