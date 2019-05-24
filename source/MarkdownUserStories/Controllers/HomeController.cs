@@ -12,7 +12,8 @@ namespace MarkdownUserStories.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            IEnumerable<UserStory> model = new HashSet<UserStory>();
+            return View(model);
         }
 
         public IActionResult Privacy()
