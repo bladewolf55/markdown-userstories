@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MarkdownUserStories.Models;
+using MarkdownUserStories.Services;
 
 namespace MarkdownUserStories.Test
 {
@@ -59,5 +60,32 @@ namespace MarkdownUserStories.Test
                 };
             }
         }
+
+        /// <summary>
+        /// All strings are empty, all dates null except CreateOnd = Now, Sequence = 0
+        /// </summary>
+        public static UserStory NewStory
+        {
+            get
+            {
+                return new UserStory()
+                {
+                    CreatedOn = DateTime.Now,
+                    StartedOn = null,
+                    CompletedOn = null,
+                    Status = "",
+                    Sequence = 0,
+                    Estimate = "",
+                    Role = "",
+                    Want = "",
+                    Why = "",
+                    Discussion = "",
+                    AcceptanceCriteria = ""
+
+                };
+            }
+        }
+
     }
+ 
 }

@@ -30,7 +30,7 @@ namespace MarkdownUserStories
             });
 
 
-            services.AddControllersWithViews()
+            services.AddControllersWithViews().AddDataAnnotationsLocalization()
                 .AddNewtonsoftJson();
             services.AddRazorPages();
         }
