@@ -9,6 +9,9 @@ using MarkdownUserStories.Services;
 
 namespace MarkdownUserStories.Test
 {
+
+    #region "Simple classes for checking which methods in mock were called"
+
     // https://stackoverflow.com/a/11296961/1628707
     // This is one of those cases where it's simpler to inherit Collection<T>
     // and add a couple of needed methods.
@@ -50,6 +53,7 @@ namespace MarkdownUserStories.Test
             Count = count;
         }
     }
+    #endregion
 
     public class StoryServiceMock : IStoryService
     {
