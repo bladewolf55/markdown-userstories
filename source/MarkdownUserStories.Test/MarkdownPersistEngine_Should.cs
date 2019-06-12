@@ -124,19 +124,58 @@ namespace MarkdownUserStories.Test
         }
 
         [Fact]
-        public void Write_expected_Markdown_from_UserStory_properties()
+        public void Write_expected_file_contents_from_UserStory_properties()
         {
             // arrange
+            MarkdownPersistEngine.SetRootFolderPath(_rootPath);
+            UserStory userStory = new UserStory()
+            {
+                CreatedOn = DateTimeHelpers.ToLocalDateTime("2001-01-01T00:00Z"),
+                StartedOn = DateTimeHelpers.ToLocalDateTime("2/1/2002 00:00"),
+                CompletedOn = DateTimeHelpers.ToLocalDateTime("3/1/2003 12:00 AM -7:00"),
+                Status = "In Process",
+                Sequence = 5,
+                Estimate = "XL",
+                Role = "Developer",
+                Want = "I want to see lots of unit tests",
+                Why = "so that I can learn how the program works.",
+                Discussion = @"There's going to be lots of discussion internally, based on
+what the developer at [Software Meadows](https://www.softwaremeadows.com) says.
 
+No doubt it'll just be the usual babble.",
+                AcceptanceCriteria = @"1.  Warned if there's a naming collision
+2.  Able to export all stories as Markdown files
+"   
+            };
+
+            string expected = $@"---
+CreatedOn: {userStory.CreatedOn.ToUtcIso()}
+StartedOn: {userStory.StartedOn?.ToUtcIso()}
+CompletedOn: {userStory.CompletedOn?.ToUtcIso()}
+Status: {userStory.Status}
+Sequence: {userStory.Sequence}
+Estimate: {userStory.Estimate}
+---
+# As a {userStory.Role}, {userStory.Want} {userStory.Why}
+
+## Discussion
+{userStory.Discussion}
+
+## Acceptance Criteria
+{userStory.AcceptanceCriteria}
+";
 
             // act
-
+            string actual = MarkdownPersistEngine.GetFileContents(userStory);
 
             // assert
-
+            string strippedActual = actual.Replace("\r", "").Replace("\n", "");
+            string strippedExpected = expected.Replace("\r", "").Replace("\n", "");
+            strippedActual.Should().Be(strippedExpected);
+            actual.Should().Be(expected);
         }
 
-        [Fact]
+        [Fact(Skip = "Not created")]
         public void Rename_file_on_changed_ids()
         {
             // arrange

@@ -22,7 +22,7 @@ And for fun, let's store each story in Markdown instead of a database.
 ---
 CreatedOn:    20190523-12:15
 # Use this initially, it's ISO standard
-StartedOn:    20190524T09:00  
+StartedOn:    2019-05-24T09:00  
 CompletedOn:  2019-05-24 16:33
 # Open, In Process, Waiting On, Done
 Status:       Done
@@ -33,8 +33,10 @@ Estimate:     XL
 # As a {ROLE}, {WANT} {WHY}
 
 ## Discussion
+{DISCUSSION}
 
 ## Acceptance Criteria
+{ACCEPTANCE CRITERIA}
 
 ```
 
