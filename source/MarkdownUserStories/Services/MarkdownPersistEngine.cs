@@ -13,7 +13,7 @@ using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 using YamlDotNet.RepresentationModel;
 using System.Globalization;
-
+using System.Text.RegularExpressions;
 
 namespace MarkdownUserStories.Services
 {
@@ -32,6 +32,8 @@ namespace MarkdownUserStories.Services
         public const string DiscussionToken = "{DISCUSSION}";
         public const string AcceptanceCriteriaToken = "{ACCEPTANCE CRITERIA}";
         public static string UtcIsoFormatString = DateTimeFormatInfo.InvariantInfo.UniversalSortableDateTimePattern;
+        public static string YamlStartToken = "---" + Environment.NewLine;
+        public static string YamlEndToken = "---";
 
         private static string _rootFolderPath = "";
 
@@ -74,7 +76,38 @@ namespace MarkdownUserStories.Services
 
         public static UserStory ReadUserStory(UserStory userStory)
         {
-            throw new NotImplementedException();
+            string filePath = GetFilePath(userStory);
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException($"The User Story file {Path.GetFileName(filePath)} was not found.");
+            }
+            string userStoryText = File.ReadAllText(filePath);
+
+            //Not valid if first line isn't yaml
+            if (!userStoryText.StartsWith(YamlStartToken))
+            {
+                throw new Exception($"Invalid User Story. Must start with YAML delimiter {YamlStartToken}");
+            }
+
+            //string yaml = userStoryText.GetUserStoryTextYaml();
+            //string body = userStoryText.GetUserStoryTextBody();
+
+            UserStoryYamlProperties yamlProperties = userStoryText.ToYamlProperties();
+            UserStoryBodyProperties bodyProperties = userStoryText.ToBodyProperties();
+
+            userStory.CreatedOn = yamlProperties.CreatedOn;
+            userStory.StartedOn = yamlProperties.StartedOn;
+            userStory.CompletedOn = yamlProperties.CompletedOn;
+            userStory.Status = yamlProperties.Status;
+            userStory.Sequence = yamlProperties.Sequence;
+            userStory.Estimate = yamlProperties.Estimate;
+            userStory.Role = bodyProperties.Role;
+            userStory.Want = bodyProperties.Want;
+            userStory.Why = bodyProperties.Why;
+            userStory.Discussion = bodyProperties.Discussion;
+            userStory.AcceptanceCriteria = bodyProperties.AcceptanceCriteria;
+
+            return userStory;
         }
 
 
@@ -95,14 +128,13 @@ namespace MarkdownUserStories.Services
         public static string GetUserStoryYaml(UserStory userStory)
         {
             var yamlProperties = userStory.ToYamlProperties();
-            var utcIsoConverter = new DateTimeConverter(kind: DateTimeKind.Local, formats: UtcIsoFormatString);
+            var utcIsoConverter = new DateTimeConverter(kind: DateTimeKind.Utc, formats: UtcIsoFormatString);
             var serializer = new SerializerBuilder()
                 .WithTypeConverter(utcIsoConverter)
-         
                 .Build();
 
             string yaml = serializer.Serialize(yamlProperties);
-            string final = $"---{Environment.NewLine}{yaml.Trim() + Environment.NewLine}---{Environment.NewLine}";
+            string final = $"{YamlStartToken}{yaml.Trim() + Environment.NewLine}{YamlEndToken}{Environment.NewLine}";
             return final.NormalizeYamlLineEndings();
         }
 
@@ -122,7 +154,7 @@ namespace MarkdownUserStories.Services
         {
             get
             {
-                return $@"# As a {RoleToken}, {WantToken} {WhyToken}
+                return $@"# As a `{RoleToken}`, `{WantToken}` `{WhyToken}`
 
 ## Discussion
 {DiscussionToken}
@@ -167,6 +199,14 @@ namespace MarkdownUserStories.Services
             };
         }
 
+        private static UserStoryYamlProperties ToYamlProperties(this string userStoryText)
+        {
+            string yaml = userStoryText.GetUserStoryTextYaml();
+            var yamlProperties = new Deserializer().Deserialize<UserStoryYamlProperties>(yaml);
+            return yamlProperties;
+        }
+
+
         private static UserStoryBodyProperties ToBodyProperties(this UserStory userStory)
         {
             return new UserStoryBodyProperties()
@@ -179,7 +219,58 @@ namespace MarkdownUserStories.Services
             };
         }
 
+        private static UserStoryBodyProperties ToBodyProperties(this string userStoryText)
+        {
+            UserStoryBodyProperties bodyProperties = new UserStoryBodyProperties();
+            string valueStartToken = "# As a ";
+            string discussionStartToken = "## Discussion";
+            string acceptanceStartToken = "## Acceptance Criteria";
+            //string[] lines =  userStoryText.Split(new [] { "\r\n" }, StringSplitOptions.None);
+            string[] lines = Regex.Split(userStoryText, "\r\n").Select(a => a.TrimEnd()).ToArray();
 
+            bool foundValue = false;
+            bool foundDiscussion = false;
+            bool foundAcceptance = false;
+
+            string valueString = "";
+            List<string> discussionString = new List<string>();
+            List<string> acceptanceString = new List<string>();
+            foreach (string line in lines)
+            {
+                if (line.StartsWith(valueStartToken)) { foundValue = true; }
+                if (line.StartsWith(discussionStartToken)) { foundValue = false; foundDiscussion = true; continue; }
+                if (line.StartsWith(acceptanceStartToken)) { foundValue = false; foundDiscussion = false; foundAcceptance = true; continue; }
+                if (foundValue) { valueString += (line.Trim()); }
+                if (foundDiscussion) { discussionString.Add(line.Trim()); }
+                if (foundAcceptance) { acceptanceString.Add(line.Trim()); }
+            }
+
+            //Parse the value line
+            var tokenValues = valueString.GetListBetween("`", "`").ToArray();
+            bodyProperties.Role = tokenValues[0];
+            bodyProperties.Want = tokenValues[1];
+            if (tokenValues.Length > 2) bodyProperties.Why = tokenValues[2];
+
+            //Discussion and Acceptance
+            //IMPORTANT: The template adds a newline to each of these properties when written to
+            //file, so remove the last newline when converting back to the property.
+            bodyProperties.Discussion = String.Join(Environment.NewLine, discussionString.Take(discussionString.Count() - 1));
+            bodyProperties.AcceptanceCriteria = String.Join(Environment.NewLine, acceptanceString.Take(acceptanceString.Count() - 1));
+
+            return bodyProperties;
+        }
+
+        public static string GetUserStoryTextYaml(this string userStoryText, bool keepTokens = false)
+        {
+            return userStoryText.ExtractYaml(keepTokens);
+        }
+
+        public static string GetUserStoryTextBody(this string userStoryText)
+        {
+            string yaml = GetUserStoryTextYaml(userStoryText, keepTokens: true);
+            string body = userStoryText.Replace(yaml, "").TrimStart();
+            return body;
+        }
 
         //https://en.wikipedia.org/wiki/ISO_8601
         public static string ToUtcIso(this DateTime dateTime)
@@ -194,9 +285,83 @@ namespace MarkdownUserStories.Services
         /// <returns></returns>
         public static string NormalizeYamlLineEndings(this string s)
         {
-            s = s.Replace("\r","").Replace("\n",Environment.NewLine);
+            s = s.Replace("\r", "").Replace("\n", Environment.NewLine);
             return s;
         }
+
+
+        // VARIOUS WAYS TO EXTRACT TEXT FROM BETWEEN TWO STRING TOKENS
+
+        /// <summary>
+        /// Returns the string from <paramref name="source"/> between
+        /// <paramref name="startString"/> and <paramref name="endString"/>
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="startString"></param>
+        /// <param name="endString"></param>
+        /// <returns></returns>
+        /// <remarks>https://stackoverflow.com/a/41242251/1628707</remarks>
+        public static string GetStringBetweenUsingNoRegex(this string source, string startString, string endString)
+        {
+            int Start = 0, End = 0;
+            if (source.Contains(startString) && source.Contains(endString))
+            {
+                Start = source.IndexOf(startString, 0) + startString.Length;
+                End = source.IndexOf(endString, Start);
+                return source.Substring(Start, End - Start);
+            }
+            else
+                return string.Empty;
+        }
+
+
+        /// <summary>
+        /// Returns <see cref="List{String}"/> from <paramref name="source"/> between
+        /// <paramref name="startString"/> and <paramref name="endString"/>
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="startString"></param>
+        /// <param name="endString"></param>
+        /// <returns></returns>
+        /// <remarks>https://stackoverflow.com/a/13780976/1628707</remarks>
+        public static List<string> GetListBetween(this string source, string startString, string endString)
+        {
+            var results = new List<string>();
+
+            string pattern = string.Format(
+                "{0}({1}){2}",
+                Regex.Escape(startString),
+                ".+?",
+                 Regex.Escape(endString));
+
+            foreach (Match m in Regex.Matches(source, pattern,
+                RegexOptions.Singleline))
+            {
+                results.Add(m.Groups[1].Value);
+            }
+
+            return results;
+        }
+
+        // Define other methods and classes here
+        public static string GetStringBetween(this string source, string startString, string endString)
+        {
+            return String.Join(Environment.NewLine, GetListBetween(source, startString, endString));
+        }
+
+        /// <summary>
+        /// Assumes <paramref name="source"/> has YAML delimited by ---\r\n and ---
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        private static string ExtractYaml(this string source, bool keepTokens = false)
+        {
+            string yaml = GetStringBetween(source, YamlStartToken, YamlEndToken);
+            if (keepTokens) yaml = YamlStartToken + yaml + YamlEndToken;
+            return yaml;
+        }
+
+
 
         #endregion
     }

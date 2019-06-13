@@ -24,12 +24,10 @@ namespace MarkdownUserStories.Test
             Directory.CreateDirectory(_rootPath);
         }
 
-
         public void Dispose()
         {
             try { Directory.Delete(_rootPath, recursive: true); } catch { }
         }
-
 
         [Fact]
         public void Return_expected_root_path()
@@ -124,58 +122,51 @@ namespace MarkdownUserStories.Test
         }
 
         [Fact]
-        public void Write_expected_file_contents_from_UserStory_properties()
+        public void Get_expected_file_contents_from_UserStory_properties()
         {
             // arrange
-            MarkdownPersistEngine.SetRootFolderPath(_rootPath);
-            UserStory userStory = new UserStory()
-            {
-                CreatedOn = DateTimeHelpers.ToLocalDateTime("2001-01-01T00:00Z"),
-                StartedOn = DateTimeHelpers.ToLocalDateTime("2/1/2002 00:00"),
-                CompletedOn = DateTimeHelpers.ToLocalDateTime("3/1/2003 12:00 AM -7:00"),
-                Status = "In Process",
-                Sequence = 5,
-                Estimate = "XL",
-                Role = "Developer",
-                Want = "I want to see lots of unit tests",
-                Why = "so that I can learn how the program works.",
-                Discussion = @"There's going to be lots of discussion internally, based on
-what the developer at [Software Meadows](https://www.softwaremeadows.com) says.
+            UserStory userStory = MarkdownStoriesMocks.FullUserStory;
 
-No doubt it'll just be the usual babble.",
-                AcceptanceCriteria = @"1.  Warned if there's a naming collision
-2.  Able to export all stories as Markdown files
-"   
-            };
-
-            string expected = $@"---
-CreatedOn: {userStory.CreatedOn.ToUtcIso()}
-StartedOn: {userStory.StartedOn?.ToUtcIso()}
-CompletedOn: {userStory.CompletedOn?.ToUtcIso()}
-Status: {userStory.Status}
-Sequence: {userStory.Sequence}
-Estimate: {userStory.Estimate}
----
-# As a {userStory.Role}, {userStory.Want} {userStory.Why}
-
-## Discussion
-{userStory.Discussion}
-
-## Acceptance Criteria
-{userStory.AcceptanceCriteria}
-";
+            string expected = MarkdownStoriesMocks.FullUserStoryText;
 
             // act
             string actual = MarkdownPersistEngine.GetFileContents(userStory);
 
             // assert
+            // Stripping CR LF asserts the text is correct, but, of course, indendation
+            // matters, too.
             string strippedActual = actual.Replace("\r", "").Replace("\n", "");
             string strippedExpected = expected.Replace("\r", "").Replace("\n", "");
-            strippedActual.Should().Be(strippedExpected);
-            actual.Should().Be(expected);
+            strippedActual.Should().Be(strippedExpected,"the CR LF characters were stripped out");
+            actual.Should().Be(expected, "all indentation was retained");
         }
 
-        [Fact(Skip = "Not created")]
+        [Fact]
+        public void Read_UserStory_from_file()
+        {
+            // arrange
+            MarkdownPersistEngine.SetRootFolderPath(_rootPath);
+            UserStory expected = MarkdownStoriesMocks.FullUserStory;
+            // Simulate how the UI might contruct a UserStory with only the 
+            // required keys to retrieve a story.
+            UserStory passedForSearch = MarkdownStoriesMocks.NewStory;
+            passedForSearch.Role = expected.Role;
+            passedForSearch.Want = expected.Want;
+            passedForSearch.Why = expected.Why;
+            // manually write the text to avoid the engine causing
+            // a problem.
+            string filePath = MarkdownPersistEngine.GetFilePath(expected);
+            File.WriteAllText(filePath, MarkdownStoriesMocks.FullUserStoryText);
+
+            // act
+            UserStory actual = MarkdownPersistEngine.ReadUserStory(passedForSearch);
+
+            // assert
+            actual.Should().BeEquivalentTo(expected);
+        }
+
+
+        [Fact(Skip = "x")]
         public void Rename_file_on_changed_ids()
         {
             // arrange
@@ -189,8 +180,22 @@ Estimate: {userStory.Estimate}
         }
 
 
-        #region "Helpers"
+        [Fact]
+        public void Return_yaml_text_from_user_story_text()
+        {
+            // arrange
+            string expected = MarkdownStoriesMocks.FullUserStoryTextYaml.Replace("---\r\n","");
+            string userStoryText = MarkdownStoriesMocks.FullUserStoryText;
 
+            // act
+            string actual = MarkdownPersistEngine.GetUserStoryTextYaml(userStoryText);
+
+            // assert
+            expected.Should().BeEquivalentTo(actual);
+        }
+
+
+        #region "Helpers"
 
 
         #endregion

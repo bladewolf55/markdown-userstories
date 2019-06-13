@@ -86,6 +86,71 @@ namespace MarkdownUserStories.Test
             }
         }
 
+        public static UserStory FullUserStory
+        {
+            get
+            {
+                return new UserStory()
+                {
+                    CreatedOn = DateTime.Parse("1/1/2001"),
+                    StartedOn = DateTime.Parse("2/1/2002"),
+                    CompletedOn = DateTime.Parse("3/1/2003"),
+                    Status = "In Process",
+                    Sequence = 5,
+                    Estimate = "XL",
+                    Role = "Developer",
+                    Want = "I want to see lots of unit tests",
+                    Why = "so that I can learn how the program works.",
+                    Discussion = @"There's going to be lots of discussion internally, based on
+what the developer at [Software Meadows](https://www.softwaremeadows.com) says.
+
+No doubt it'll just be the usual babble.",
+                    AcceptanceCriteria = @"1.  Warned if there's a naming collision
+2.  Able to export all stories as Markdown files
+"
+                };
+
+            }
+        }
+
+        public static string FullUserStoryText
+        {
+            get { return FullUserStoryTextYaml + FullUserStoryTextBody; }
+        }
+
+
+        public static string FullUserStoryTextYaml
+        {
+            get
+            {
+                var userStory = FullUserStory;
+                return $@"---
+CreatedOn: 2001-01-01 07:00:00Z
+StartedOn: 2002-02-01 07:00:00Z
+CompletedOn: 2003-03-01 07:00:00Z
+Status: {userStory.Status}
+Sequence: {userStory.Sequence}
+Estimate: {userStory.Estimate}
+---
+";
+            }
+        }
+
+        public static string FullUserStoryTextBody
+        {
+            get
+            {
+                var userStory = FullUserStory;
+                return $@"# As a `{userStory.Role}`, `{userStory.Want}` `{userStory.Why}`
+
+## Discussion
+{userStory.Discussion}
+
+## Acceptance Criteria
+{userStory.AcceptanceCriteria}
+";               
+            }
+        }
     }
- 
+
 }
