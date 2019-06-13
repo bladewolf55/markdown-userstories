@@ -61,6 +61,24 @@ namespace MarkdownUserStories.Controllers
             return RedirectToAction(actionName: nameof(Index));
         }
 
+        [HttpPatch]
+        public IActionResult UpdateStories([FromBody] IEnumerable<UserStory> model)
+        {
+            try
+            {
+                _storyService.SaveStories(model);
+            }
+            catch (Exception ex)
+            {                
+                var code = Microsoft.AspNetCore.Http.StatusCodes.Status409Conflict;
+                var type = System.Net.Mime.MediaTypeNames.Text.Html;
+                var msg =  ex.GetBaseException().Message;
+                msg = System.Net.WebUtility.HtmlEncode(msg);
+                return new ContentResult() { Content = msg, StatusCode = code, ContentType =  type };
+            }
+            return Ok();
+        }
+
         [HttpDelete]
         public IActionResult DeleteStory([FromBody]UserStory model)
         {
@@ -88,6 +106,13 @@ namespace MarkdownUserStories.Controllers
             model = _storyService.SaveStory(model);
 
             return RedirectToAction(actionName: nameof(Index));
+        }
+
+        [HttpGet]
+        public IActionResult GetStoriesWithStatus([FromQuery] string[] statuses)
+        {
+            var model = _storyService.GetStoriesWithStatus(statuses);
+            return View(nameof(Index), model);
         }
 
 

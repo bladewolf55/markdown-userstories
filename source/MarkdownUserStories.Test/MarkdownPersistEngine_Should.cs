@@ -20,7 +20,7 @@ namespace MarkdownUserStories.Test
             string tempFolderName = "67e11740-fb7c-47c0-9c4c-e0afee2f10a7";
             _rootPath = Environment.ExpandEnvironmentVariables($@"%TEMP%\{tempFolderName}");
             //Try to delete the folder, then create.
-            try { Directory.Delete(_rootPath, recursive: true); } catch{}
+            try { Directory.Delete(_rootPath, recursive: true); } catch { }
             Directory.CreateDirectory(_rootPath);
         }
 
@@ -137,7 +137,7 @@ namespace MarkdownUserStories.Test
             // matters, too.
             string strippedActual = actual.Replace("\r", "").Replace("\n", "");
             string strippedExpected = expected.Replace("\r", "").Replace("\n", "");
-            strippedActual.Should().Be(strippedExpected,"the CR LF characters were stripped out");
+            strippedActual.Should().Be(strippedExpected, "the CR LF characters were stripped out");
             actual.Should().Be(expected, "all indentation was retained");
         }
 
@@ -165,6 +165,59 @@ namespace MarkdownUserStories.Test
             actual.Should().BeEquivalentTo(expected);
         }
 
+        [Fact]
+        public void Successfully_round_trip_a_UserStory()
+        {
+            // arrange
+            UserStory expected = MarkdownStoriesMocks.FullUserStory;
+
+            // act
+            MarkdownPersistEngine.WriteUserStory(expected);
+            var actual = MarkdownPersistEngine.ReadUserStory(expected);
+
+            // assert
+            expected.Should().BeEquivalentTo(actual);
+
+        }
+
+        [Fact]
+        public void Successfully_round_trip_a_file()
+        {
+            // arrange
+            MarkdownPersistEngine.SetRootFolderPath(_rootPath);
+            string expected = MarkdownStoriesMocks.FullUserStoryText;
+            UserStory story = new UserStory() { Role = "a", Want = "b" };
+            string filePath = MarkdownPersistEngine.GetFilePath(story);
+            File.WriteAllText(filePath, expected);
+
+            // act
+            UserStory userStory = MarkdownPersistEngine.ReadUserStory(story);
+            File.Delete(filePath);
+            filePath = MarkdownPersistEngine.GetFilePath(userStory);
+            MarkdownPersistEngine.WriteUserStory(userStory);
+            string actual = File.ReadAllText(filePath);
+            // assert
+            actual.Should().Be(expected);
+        }
+
+
+        [Fact]
+        public void Delete_a_file()
+        {
+            // arrange
+            MarkdownPersistEngine.SetRootFolderPath(_rootPath);
+            UserStory story = MarkdownStoriesMocks.FullUserStory;
+            MarkdownPersistEngine.WriteUserStory(story);
+            string filePath = MarkdownPersistEngine.GetFilePath(story);
+
+            // act
+            File.Exists(filePath).Should().BeTrue();
+            MarkdownPersistEngine.DeleteUserStory(story);
+
+            // assert
+            File.Exists(filePath).Should().BeFalse();
+
+        }
 
         [Fact(Skip = "x")]
         public void Rename_file_on_changed_ids()
@@ -184,7 +237,7 @@ namespace MarkdownUserStories.Test
         public void Return_yaml_text_from_user_story_text()
         {
             // arrange
-            string expected = MarkdownStoriesMocks.FullUserStoryTextYaml.Replace("---\r\n","");
+            string expected = MarkdownStoriesMocks.FullUserStoryTextYaml.Replace("---\r\n", "");
             string userStoryText = MarkdownStoriesMocks.FullUserStoryText;
 
             // act

@@ -211,6 +211,94 @@ namespace MarkdownUserStories.Test
             _storyService.CalledMethods["DeleteStory"].Count.Should().Be(1);
         }
 
+        [Fact]
+        public void On_GetStoriesWithStatus_call_service_GetStoriesWithStatus_once()
+        {
+            // arrange
+            var controller = GetHomeController();
+
+            // act
+            var result = controller.GetStoriesWithStatus(new string[] { });
+
+            // assert
+            _storyService.CalledMethods["GetStoriesWithStatus"].Count.Should().Be(1);
+        }
+
+        [Fact]
+        public void On_GetStoriesWithStatus_return_Index_View()
+        {
+            // arrange
+            var controller = GetHomeController();
+            string[] statuses = new[] { "Backlog", "Done" };
+
+            // act
+            var result = controller.GetStoriesWithStatus(new string[] { });
+
+            // assert
+            result.Should().BeOfType<ViewResult>();
+            result.ViewResult().ViewName.Should().Be("Index");
+        }
+
+        [Fact]
+        public void On_GetStoriesWithStatus_return_3_stories()
+        {
+            // arrange
+            var controller = GetHomeController();
+            string[] statuses = new[] { "Backlog", "Done" };
+
+            // act
+            var result = controller.GetStoriesWithStatus(statuses);
+
+            // assert
+            result.ViewResult().Model.Should().BeAssignableTo<IEnumerable<UserStory>>();
+            result.UserStoriesViewModel().Count().Should().Be(3);
+        }
+
+        [Fact]
+        public void On_UpdateStories_return_OK()
+        {
+            // arrange
+            var controller = GetHomeController();
+
+            // act
+            var result = controller.UpdateStories(MarkdownStoriesMocks.CurrentStories);
+
+            // assert
+            result.Should().BeOfType<OkResult>();
+        }
+
+        [Fact]
+        public void On_UpdateStories_call_SaveStories_once()
+        {
+            // arrange
+            var controller = GetHomeController();
+
+            // act
+            var result = controller.UpdateStories(MarkdownStoriesMocks.CurrentStories);
+
+            // assert
+            _storyService.CalledMethods["SaveStories"].Count.Should().Be(1);
+        }
+ 
+        [Fact]
+        public void On_UpdateStories_error_should_return_HTML()
+        {
+            // arrange
+            var controller = GetHomeController();
+            _storyService.Exception = new Exception("MyProperty Error1 Error2");
+
+            // act
+            var result = controller.UpdateStories(MarkdownStoriesMocks.CurrentStories);
+
+            // assert
+            result.Should().BeOfType<ContentResult>();
+            var content = (ContentResult)result;
+            content.StatusCode.Should().Be(StatusCodes.Status409Conflict);
+            content.ContentType.Should().Be(System.Net.Mime.MediaTypeNames.Text.Html);
+            content.Content.Should().ContainAll("MyProperty", "Error1", "Error2");
+        }
+
+
     }
 
     public static class ControllerHelpers

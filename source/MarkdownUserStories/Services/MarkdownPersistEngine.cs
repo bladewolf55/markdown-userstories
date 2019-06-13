@@ -110,6 +110,14 @@ namespace MarkdownUserStories.Services
             return userStory;
         }
 
+        public static void DeleteUserStory(UserStory userStory)
+        {
+            try
+            {
+                File.Delete(GetFilePath(userStory));
+            }
+            catch { }
+        }
 
         #region "Helpers"
 
@@ -226,7 +234,8 @@ namespace MarkdownUserStories.Services
             string discussionStartToken = "## Discussion";
             string acceptanceStartToken = "## Acceptance Criteria";
             //string[] lines =  userStoryText.Split(new [] { "\r\n" }, StringSplitOptions.None);
-            string[] lines = Regex.Split(userStoryText, "\r\n").Select(a => a.TrimEnd()).ToArray();
+            //string[] lines = Regex.Split(userStoryText, "\r\n").Select(a => a.TrimEnd()).ToArray();
+            string[] lines = userStoryText.Split("\r\n");
 
             bool foundValue = false;
             bool foundDiscussion = false;
@@ -365,5 +374,31 @@ namespace MarkdownUserStories.Services
 
         #endregion
     }
+
+    //TODO: Pull some of the helpers into here as extension methods
+
+    public static class MarkdownPersistEngineExtenionMethods
+    {
+        /// <summary>
+        /// Returns a string array from <paramref name="source"/> 
+        /// split by <paramref name="delimiter"/>
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="delimiter"></param>
+        /// <param name="removeEmptyEntries"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Wouldn't it make sense to include this overload? I bet 
+        /// it's one of the most expected method calls, to split on a string.
+        /// Until today (2019-06-12) I didn't know it could be done this way.
+        /// https://docs.microsoft.com/en-us/dotnet/api/system.string.split?redirectedfrom=MSDN&view=netframework-4.8#System_String_Split_System_String___System_StringSplitOptions_
+        /// </remarks>
+        public static string[] Split(this string source, string delimiter, bool removeEmptyEntries = false)
+        {
+            StringSplitOptions options = removeEmptyEntries ? StringSplitOptions.RemoveEmptyEntries : StringSplitOptions.None;
+            return source.Split(new string[] { delimiter }, options);
+        }
+    }
+
 
 }

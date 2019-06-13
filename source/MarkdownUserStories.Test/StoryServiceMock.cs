@@ -86,19 +86,22 @@ namespace MarkdownUserStories.Test
         public IEnumerable<UserStory> GetStoriesWithStatus(params string[] status)
         {
             CalledMethods.Increment(System.Reflection.MethodBase.GetCurrentMethod().Name);
-            throw new NotImplementedException();
+            CheckException();
+            return UserStories;
         }
 
         public UserStory GetStory(string role, string want, string why)
         {
             CalledMethods.Increment(System.Reflection.MethodBase.GetCurrentMethod().Name);
+            CheckException();
             return UserStory;
         }
 
         public IEnumerable<UserStory> SaveStories(IEnumerable<UserStory> stories)
         {
             CalledMethods.Increment(System.Reflection.MethodBase.GetCurrentMethod().Name);
-            throw new NotImplementedException();
+            CheckException();
+            return UserStories;
         }
 
         public UserStory SaveStory(UserStory story)

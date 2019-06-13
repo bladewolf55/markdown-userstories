@@ -34,6 +34,11 @@ namespace MarkdownUserStories.Services
             return d.LocalDateTime;
         }
 
+        /// <summary>
+        /// Converts <paramref name="d"/> to UTC in format yyyy-MM-dd hh:mm:ssZ
+        /// </summary>
+        /// <param name="d"></param>
+        /// <returns></returns>
         public static string ToUtcIsoString(DateTimeOffset d)
         {
             // First requirement, convert DateTime to UTC if it's not already, and return in UTC format.
