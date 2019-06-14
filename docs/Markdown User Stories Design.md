@@ -24,7 +24,7 @@ CreatedOn:    20190523-12:15
 # Use this initially, it's ISO standard
 StartedOn:    2019-05-24T09:00  
 CompletedOn:  2019-05-24 16:33
-# Open, In Process, Waiting On, Done
+# Backlog, In Process, Waiting On, Done
 Status:       Done
 Sequence:     5
 Estimate:     XL

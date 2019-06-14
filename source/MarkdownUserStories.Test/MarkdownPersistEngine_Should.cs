@@ -219,6 +219,27 @@ namespace MarkdownUserStories.Test
 
         }
 
+        [Fact]
+        public void Return_a_collection_of_user_stories()
+        {
+            // arrange
+            MarkdownPersistEngine.SetRootFolderPath(_rootPath);
+            //Add the story files using engine as little as possible to isolate the method use.
+            foreach(var story in MarkdownStoriesMocks.CurrentStories)
+            {
+                string storyText = MarkdownPersistEngine.GetFileContents(story);
+                string filePath = MarkdownPersistEngine.GetFilePath(story);
+                File.WriteAllText(filePath, storyText);
+            }
+            int expectedCount = MarkdownStoriesMocks.CurrentStories.Count();
+
+            // act
+            var stories = MarkdownPersistEngine.GetUserStories();
+
+            // assert
+            stories.Count().Should().Be(expectedCount);
+        }
+
         [Fact(Skip = "x")]
         public void Rename_file_on_changed_ids()
         {

@@ -43,6 +43,7 @@ namespace MarkdownUserStories.Services
         }
 
         public static string RootFolderPath { get { return _rootFolderPath; } }
+
         /// <summary>
         /// Return path, and filename in form Role``Want``Why.md. If Why is null, no character is used.
         /// Filename invalid characters are replaced with an underscore.
@@ -65,7 +66,12 @@ namespace MarkdownUserStories.Services
 
         public static IEnumerable<UserStory> GetUserStories()
         {
-            throw new NotImplementedException();
+            List<UserStory> stories = new List<UserStory>();
+            foreach (string filePath in Directory.GetFiles(RootFolderPath))
+            {
+                stories.Add(ReadUserStory(filePath));
+            }
+            return stories;
         }
         public static void WriteUserStory(UserStory userStory)
         {
@@ -77,6 +83,12 @@ namespace MarkdownUserStories.Services
         public static UserStory ReadUserStory(UserStory userStory)
         {
             string filePath = GetFilePath(userStory);
+            return ReadUserStory(filePath);
+        }
+
+        public static UserStory ReadUserStory(string filePath)
+        {
+            UserStory userStory = new UserStory();
             if (!File.Exists(filePath))
             {
                 throw new FileNotFoundException($"The User Story file {Path.GetFileName(filePath)} was not found.");
@@ -108,6 +120,7 @@ namespace MarkdownUserStories.Services
             userStory.AcceptanceCriteria = bodyProperties.AcceptanceCriteria;
 
             return userStory;
+
         }
 
         public static void DeleteUserStory(UserStory userStory)

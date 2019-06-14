@@ -8,9 +8,23 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+//
+using MarkdownUserStories.Services;
 
 namespace MarkdownUserStories
 {
+
+
+    //public class AppDataHelper
+    //{
+    //    private readonly Microsoft.Extensions.Hosting.IHostEnvironment _hostEnvironment;
+    //    private const string _appDataFolder = "AppData";
+
+    //    public AppDataHelper(Microsoft.Extensions.Hosting.IHostEnvironment hostEnvironment)
+    //    {
+    //        _hostEnvironment = hostEnvironment;
+    //    }
+    //}
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -33,6 +47,9 @@ namespace MarkdownUserStories
             services.AddControllersWithViews().AddDataAnnotationsLocalization()
                 .AddNewtonsoftJson();
             services.AddRazorPages();
+
+            //App Services
+            services.AddScoped<IStoryService, MarkdownStoryService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,7 +64,7 @@ namespace MarkdownUserStories
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
-            }
+            }            
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

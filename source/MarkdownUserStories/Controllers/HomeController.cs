@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MarkdownUserStories.Models;
 using MarkdownUserStories.Services;
-
+using Microsoft.AspNetCore.Hosting;
 
 namespace MarkdownUserStories.Controllers
 {
@@ -32,7 +32,8 @@ namespace MarkdownUserStories.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddStory([FromBody]UserStory model)
+        [ValidateAntiForgeryToken]
+        public IActionResult AddStory([FromForm]UserStory model)
         {
             if (!ModelState.IsValid)
             {
@@ -46,23 +47,9 @@ namespace MarkdownUserStories.Controllers
             return RedirectToAction(actionName: nameof(Index));
         }
 
-        [HttpPatch]
-        public IActionResult UpdateStory([FromBody]UserStory model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            //Save
-            //The service takes care of setting the Sequence property on new models.
-            model = _storyService.SaveStory(model);
-
-            return RedirectToAction(actionName: nameof(Index));
-        }
-
-        [HttpPatch]
-        public IActionResult UpdateStories([FromBody] IEnumerable<UserStory> model)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult UpdateStories([FromForm] IEnumerable<UserStory> model)
         {
             try
             {
@@ -79,22 +66,33 @@ namespace MarkdownUserStories.Controllers
             return Ok();
         }
 
-        [HttpDelete]
-        public IActionResult DeleteStory([FromBody]UserStory model)
+
+        [HttpGet]
+        public IActionResult DeleteStory([FromQuery] string role, string want, string why)
+        {
+            UserStory model = _storyService.GetStory(role, want, why);
+            return View(model);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteStory([FromForm] UserStory model)
         {
             _storyService.DeleteStory(model);
             return RedirectToAction(actionName: nameof(Index));
         }
 
         [HttpGet]
-        public IActionResult EditStory([FromQuery] string role, string what, string why)
+        public IActionResult EditStory([FromQuery] string role, string want, string why)
         {
-            UserStory model = _storyService.GetStory(role, what, why);
+            UserStory model = _storyService.GetStory(role, want, why);
             return View(model);
         }
 
-        [HttpPatch]
-        public IActionResult EditStory([FromBody]UserStory model)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditStory([FromForm]UserStory model)
         {
             if (!ModelState.IsValid)
             {

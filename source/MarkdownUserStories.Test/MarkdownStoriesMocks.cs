@@ -20,42 +20,42 @@ namespace MarkdownUserStories.Test
                          CreatedOn = DateTime.Parse("1/1/2019"),
                          StartedOn = null,
                          CompletedOn = null,
-                         Status = "",
+                         Status = "Backlog",
                          Sequence = 1,
-                         Estimate = "",
-                         Role = "",
-                         Want = "",
-                         Why = "",
-                         Discussion = "",
-                         AcceptanceCriteria = ""
+                         Estimate = "Estimate1",
+                         Role = "Role1",
+                         Want = "Want1",
+                         Why = "Why1",
+                         Discussion = "Discussion1",
+                         AcceptanceCriteria = "AcceptanceCriteria1"
                     },
                     new UserStory()
                     {
                          CreatedOn = DateTime.Parse("2/1/2019"),
                          StartedOn = DateTime.Parse("2/2/2019"),
                          CompletedOn = null,
-                         Status = "",
+                         Status = "In Process",
                          Sequence = 2,
-                         Estimate = "",
-                         Role = "",
-                         Want = "",
-                         Why = "",
-                         Discussion = "",
-                         AcceptanceCriteria = ""
+                         Estimate = "Estimate2",
+                         Role = "Role2",
+                         Want = "Want2",
+                         Why = "Why2",
+                         Discussion = "Discussion2",
+                         AcceptanceCriteria = "AcceptanceCriteria2"
                     },
                     new UserStory()
                     {
                          CreatedOn = DateTime.Parse("3/1/2019 13:00"),
                          StartedOn = DateTime.Parse("3/2/2019 14:00"),
                          CompletedOn = DateTime.Parse("3/3/2019 15:00"),
-                         Status = "",
+                         Status = "Done",
                          Sequence = 3,
-                         Estimate = "",
-                         Role = "",
-                         Want = "",
-                         Why = "",
-                         Discussion = "",
-                         AcceptanceCriteria = ""
+                         Estimate = "Estimate3",
+                         Role = "Role3",
+                         Want = "Want3",
+                         Why = "Why3",
+                         Discussion = "Discussion3",
+                         AcceptanceCriteria = "AcceptanceCriteria3"
                     },
                 };
             }

@@ -184,14 +184,14 @@ namespace MarkdownUserStories.Test
         }
 
         [Fact]
-        public void On_update_call_service_SaveStory_once()
+        public void On_edit_call_service_SaveStory_once()
         {
             // arrange
             var controller = GetHomeController();
             var model = MarkdownStoriesMocks.NewStory;
 
             // act
-            var result = controller.UpdateStory(model);
+            var result = controller.EditStory(model);
 
             // assert
             _storyService.CalledMethods["SaveStory"].Count.Should().Be(1);
@@ -202,10 +202,9 @@ namespace MarkdownUserStories.Test
         {
             // arrange
             var controller = GetHomeController();
-            var model = MarkdownStoriesMocks.NewStory;
 
             // act
-            var result = controller.DeleteStory(model);
+            var result = controller.DeleteStory("","","");
 
             // assert
             _storyService.CalledMethods["DeleteStory"].Count.Should().Be(1);
