@@ -198,13 +198,28 @@ namespace MarkdownUserStories.Test
         }
 
         [Fact]
-        public void On_delete_call_service_DeleteStory_once()
+        public void On_GET_delete_return_view_and_story_model()
+        {
+            // arrange
+            var controller = GetHomeController();
+            _storyService.UserStory = MarkdownStoriesMocks.FullUserStory;
+
+            // act
+            var result = controller.DeleteStory("","","");
+
+            // assert
+            result.Should().BeOfType<ViewResult>();
+            result.ViewResult().Model.Should().BeOfType<UserStory>();
+        }
+
+        [Fact]
+        public void On_POST_delete_call_service_DeleteStory_once()
         {
             // arrange
             var controller = GetHomeController();
 
             // act
-            var result = controller.DeleteStory("","","");
+            var result = controller.DeleteStory(new UserStory());
 
             // assert
             _storyService.CalledMethods["DeleteStory"].Count.Should().Be(1);
@@ -322,6 +337,11 @@ namespace MarkdownUserStories.Test
             var model = modelObject as UserStory;
             return model;
 
+        }
+
+        public static RedirectToActionResult RedirectToActionResult(this IActionResult actionResult)
+        {
+            return (RedirectToActionResult)actionResult;
         }
 
     }
