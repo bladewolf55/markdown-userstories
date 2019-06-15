@@ -54,66 +54,24 @@ namespace MarkdownUserStories.Test
         {
             // arrange
             MarkdownPersistEngine.SetRootFolderPath(_rootPath);
-            UserStory userStory = MarkdownStoriesMocks.NewStory;
-            userStory.Role = "My Role!";
-            userStory.Want = "My want,";
-            userStory.Why = "Just .Because";
-            string expectedFilePath = Path.Combine(_rootPath, $"My Role!`~`My want,`~`Just .Because.md");
+            string id = MarkdownStoriesMocks.FilenameWithoutExtension;
+            string expectedFilePath = Path.Combine(_rootPath, $"{id}.md");
 
             // act            
             // assert
-            MarkdownPersistEngine.GetFilePath(userStory).Should().Be(expectedFilePath);
+            MarkdownPersistEngine.GetFilePath(id).Should().Be(expectedFilePath);
         }
 
+ 
         [Fact]
-        public void Return_expected_file_path_when_why_is_null()
+        public void Write_UserStory_file_to_filesystem()
         {
-            // arrange
-            MarkdownPersistEngine.SetRootFolderPath(_rootPath);
-            UserStory userStory = MarkdownStoriesMocks.NewStory;
-            userStory.Role = "My Role!";
-            userStory.Want = "My want,";
-            userStory.Why = null;
-            string expectedFilePath = Path.Combine(_rootPath, $"My Role!`~`My want,`~`.md");
-
-            // act            
-            // assert
-            MarkdownPersistEngine.GetFilePath(userStory).Should().Be(expectedFilePath);
-
-        }
-
-        [Fact]
-        public void Return_expected_file_path_using_disallowed_characters()
-        {
-            // These are not ALL the disallowed characters, only the printed ones. 
-            // " < > | : * ? \ /
 
             // arrange
             MarkdownPersistEngine.SetRootFolderPath(_rootPath);
             UserStory userStory = MarkdownStoriesMocks.NewStory;
-            userStory.Role = "My Role!\"<>";
-            userStory.Want = "My |:*want,";
-            userStory.Why = "\\Just /.Because";
-            string expectedFilePath = Path.Combine(_rootPath, $"My Role!___`~`My ___want,`~`_Just _.Because.md");
-
-            // act            
-            // assert
-            MarkdownPersistEngine.GetFilePath(userStory).Should().Be(expectedFilePath);
-        }
-
-        [Fact]
-        public void Write_UserStory_file_to_filesystem_using_disallowed_characters()
-        {
-            // These are not ALL the disallowed characters, only the printed ones. 
-            // " < > | : * ? \ /
-
-            // arrange
-            MarkdownPersistEngine.SetRootFolderPath(_rootPath);
-            UserStory userStory = MarkdownStoriesMocks.NewStory;
-            userStory.Role = "My Role!\"<>";
-            userStory.Want = "My |:*want,";
-            userStory.Why = "\\Just /.Because";
-            string expectedFilePath = Path.Combine(_rootPath, $"My Role!___`~`My ___want,`~`_Just _.Because.md");
+            userStory.Id = "x";
+            string expectedFilePath = Path.Combine(_rootPath, $"{userStory.Id}.md");
 
             // act
             MarkdownPersistEngine.WriteUserStory(userStory);
@@ -135,9 +93,9 @@ namespace MarkdownUserStories.Test
             // assert
             // Stripping CR LF asserts the text is correct, but, of course, indendation
             // matters, too.
-            string strippedActual = actual.Replace("\r", "").Replace("\n", "");
-            string strippedExpected = expected.Replace("\r", "").Replace("\n", "");
-            strippedActual.Should().Be(strippedExpected, "the CR LF characters were stripped out");
+            //string strippedActual = actual.Replace("\r", "").Replace("\n", "");
+            //string strippedExpected = expected.Replace("\r", "").Replace("\n", "");
+            //strippedActual.Should().Be(strippedExpected, "the CR LF characters were stripped out");
             actual.Should().Be(expected, "all indentation was retained");
         }
 
@@ -147,19 +105,13 @@ namespace MarkdownUserStories.Test
             // arrange
             MarkdownPersistEngine.SetRootFolderPath(_rootPath);
             UserStory expected = MarkdownStoriesMocks.FullUserStory;
-            // Simulate how the UI might contruct a UserStory with only the 
-            // required keys to retrieve a story.
-            UserStory passedForSearch = MarkdownStoriesMocks.NewStory;
-            passedForSearch.Role = expected.Role;
-            passedForSearch.Want = expected.Want;
-            passedForSearch.Why = expected.Why;
             // manually write the text to avoid the engine causing
             // a problem.
-            string filePath = MarkdownPersistEngine.GetFilePath(expected);
+            string filePath = MarkdownPersistEngine.GetFilePath(expected.Id);
             File.WriteAllText(filePath, MarkdownStoriesMocks.FullUserStoryText);
 
             // act
-            UserStory actual = MarkdownPersistEngine.ReadUserStory(passedForSearch);
+            UserStory actual = MarkdownPersistEngine.ReadUserStoryFromId(expected.Id);
 
             // assert
             actual.Should().BeEquivalentTo(expected);
@@ -173,7 +125,7 @@ namespace MarkdownUserStories.Test
 
             // act
             MarkdownPersistEngine.WriteUserStory(expected);
-            var actual = MarkdownPersistEngine.ReadUserStory(expected);
+            var actual = MarkdownPersistEngine.ReadUserStoryFromId(expected.Id);
 
             // assert
             expected.Should().BeEquivalentTo(actual);
@@ -186,14 +138,14 @@ namespace MarkdownUserStories.Test
             // arrange
             MarkdownPersistEngine.SetRootFolderPath(_rootPath);
             string expected = MarkdownStoriesMocks.FullUserStoryText;
-            UserStory story = new UserStory() { Role = "a", Want = "b" };
-            string filePath = MarkdownPersistEngine.GetFilePath(story);
+            UserStory story = new UserStory() {Id = "a" };
+            string filePath = MarkdownPersistEngine.GetFilePath(story.Id);
             File.WriteAllText(filePath, expected);
 
             // act
-            UserStory userStory = MarkdownPersistEngine.ReadUserStory(story);
+            UserStory userStory = MarkdownPersistEngine.ReadUserStoryFromId(story.Id);
             File.Delete(filePath);
-            filePath = MarkdownPersistEngine.GetFilePath(userStory);
+            filePath = MarkdownPersistEngine.GetFilePath(userStory.Id);
             MarkdownPersistEngine.WriteUserStory(userStory);
             string actual = File.ReadAllText(filePath);
             // assert
@@ -208,11 +160,11 @@ namespace MarkdownUserStories.Test
             MarkdownPersistEngine.SetRootFolderPath(_rootPath);
             UserStory story = MarkdownStoriesMocks.FullUserStory;
             MarkdownPersistEngine.WriteUserStory(story);
-            string filePath = MarkdownPersistEngine.GetFilePath(story);
+            string filePath = MarkdownPersistEngine.GetFilePath(story.Id);
 
             // act
             File.Exists(filePath).Should().BeTrue();
-            MarkdownPersistEngine.DeleteUserStory(story);
+            MarkdownPersistEngine.DeleteUserStory(story.Id);
 
             // assert
             File.Exists(filePath).Should().BeFalse();
@@ -228,7 +180,7 @@ namespace MarkdownUserStories.Test
             foreach(var story in MarkdownStoriesMocks.CurrentStories)
             {
                 string storyText = MarkdownPersistEngine.GetFileContents(story);
-                string filePath = MarkdownPersistEngine.GetFilePath(story);
+                string filePath = MarkdownPersistEngine.GetFilePath(story.Id);
                 File.WriteAllText(filePath, storyText);
             }
             int expectedCount = MarkdownStoriesMocks.CurrentStories.Count();
@@ -239,20 +191,6 @@ namespace MarkdownUserStories.Test
             // assert
             stories.Count().Should().Be(expectedCount);
         }
-
-        [Fact(Skip = "x")]
-        public void Rename_file_on_changed_ids()
-        {
-            // arrange
-
-
-            // act
-
-
-            // assert
-            throw new NotImplementedException();
-        }
-
 
         [Fact]
         public void Return_yaml_text_from_user_story_text()

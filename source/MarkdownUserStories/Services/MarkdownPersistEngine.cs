@@ -45,15 +45,13 @@ namespace MarkdownUserStories.Services
         public static string RootFolderPath { get { return _rootFolderPath; } }
 
         /// <summary>
-        /// Return path, and filename in form Role``Want``Why.md. If Why is null, no character is used.
-        /// Filename invalid characters are replaced with an underscore.
+        /// Return path to file
         /// </summary>
         /// <param name="userStory"></param>
         /// <returns></returns>
-        public static string GetFilePath(UserStory userStory)
+        public static string GetFilePath(string id)
         {
-            string fileName = $"{userStory.Role}{FilePropertyDelimeter}{userStory.Want}{FilePropertyDelimeter}{userStory.Why ?? ""}.md";
-            fileName = ReplaceInvalidCharacters(fileName);
+            string fileName = $"{id}.md";
             string filePath = Path.Combine(RootFolderPath, fileName);
             return filePath;
         }
@@ -69,24 +67,31 @@ namespace MarkdownUserStories.Services
             List<UserStory> stories = new List<UserStory>();
             foreach (string filePath in Directory.GetFiles(RootFolderPath))
             {
-                stories.Add(ReadUserStory(filePath));
+                stories.Add(ReadUserStoryFromPath(filePath));
             }
             return stories;
         }
+
+        /// <summary>
+        /// Sets <see cref="UserStory.Id"/> if empty or null.
+        /// </summary>
+        /// <param name="userStory"></param>
         public static void WriteUserStory(UserStory userStory)
         {
-            string filePath = GetFilePath(userStory);
+            if (String.IsNullOrWhiteSpace(userStory.Id))
+                userStory.Id = Path.GetFileNameWithoutExtension(Path.GetRandomFileName());
+            string filePath = GetFilePath(userStory.Id);
             string text = GetFileContents(userStory);
             File.WriteAllText(filePath, text);
         }
 
-        public static UserStory ReadUserStory(UserStory userStory)
+        public static UserStory ReadUserStoryFromId(string id)
         {
-            string filePath = GetFilePath(userStory);
-            return ReadUserStory(filePath);
+            string filePath = GetFilePath(id);
+            return ReadUserStoryFromPath(filePath);
         }
 
-        public static UserStory ReadUserStory(string filePath)
+        public static UserStory ReadUserStoryFromPath(string filePath)
         {
             UserStory userStory = new UserStory();
             if (!File.Exists(filePath))
@@ -107,6 +112,7 @@ namespace MarkdownUserStories.Services
             UserStoryYamlProperties yamlProperties = userStoryText.ToYamlProperties();
             UserStoryBodyProperties bodyProperties = userStoryText.ToBodyProperties();
 
+            userStory.Id = yamlProperties.Id;
             userStory.CreatedOn = yamlProperties.CreatedOn;
             userStory.StartedOn = yamlProperties.StartedOn;
             userStory.CompletedOn = yamlProperties.CompletedOn;
@@ -123,11 +129,11 @@ namespace MarkdownUserStories.Services
 
         }
 
-        public static void DeleteUserStory(UserStory userStory)
+        public static void DeleteUserStory(string id)
         {
             try
             {
-                File.Delete(GetFilePath(userStory));
+                File.Delete(GetFilePath(id));
             }
             catch { }
         }
@@ -188,6 +194,7 @@ namespace MarkdownUserStories.Services
 
         public class UserStoryYamlProperties
         {
+            public string Id { get; set; }
             public DateTime CreatedOn { get; set; }
             public DateTime? StartedOn { get; set; }
             public DateTime? CompletedOn { get; set; }
@@ -211,6 +218,7 @@ namespace MarkdownUserStories.Services
         {
             return new UserStoryYamlProperties()
             {
+                Id = userStory.Id,
                 CreatedOn = userStory.CreatedOn,
                 StartedOn = userStory.StartedOn,
                 CompletedOn = userStory.CompletedOn,

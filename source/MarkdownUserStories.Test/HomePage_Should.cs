@@ -141,7 +141,7 @@ namespace MarkdownUserStories.Test
             _storyService.UserStory = model;
 
             // act
-            var result = controller.EditStory(model.Role, model.Want, model.Why);
+            var result = controller.EditStory(model.Id);
 
             // assert
             result.Should().BeOfType<ViewResult>();
@@ -205,7 +205,7 @@ namespace MarkdownUserStories.Test
             _storyService.UserStory = MarkdownStoriesMocks.FullUserStory;
 
             // act
-            var result = controller.DeleteStory("","","");
+            var result = controller.DeleteStory("asdf");
 
             // assert
             result.Should().BeOfType<ViewResult>();

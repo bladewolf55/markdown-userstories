@@ -68,9 +68,9 @@ namespace MarkdownUserStories.Controllers
 
 
         [HttpGet]
-        public IActionResult DeleteStory([FromQuery] string role, string want, string why)
+        public IActionResult DeleteStory(string id)
         {
-            UserStory model = _storyService.GetStory(role, want, why);
+            UserStory model = _storyService.GetStory(id);
             return View(model);
         }
 
@@ -79,14 +79,14 @@ namespace MarkdownUserStories.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteStory([FromForm] UserStory model)
         {
-            _storyService.DeleteStory(model);
+            _storyService.DeleteStory(model.Id);
             return RedirectToAction(actionName: nameof(Index));
         }
 
         [HttpGet]
-        public IActionResult EditStory([FromQuery] string role, string want, string why)
+        public IActionResult EditStory(string id)
         {
-            UserStory model = _storyService.GetStory(role, want, why);
+            UserStory model = _storyService.GetStory(id);
             return View(model);
         }
 

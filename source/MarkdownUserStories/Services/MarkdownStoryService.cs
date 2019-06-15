@@ -20,9 +20,9 @@ namespace MarkdownUserStories.Services
             string rootPath = Path.Combine(webHostEnvironment.ContentRootPath, "AppData");
             MarkdownPersistEngine.SetRootFolderPath(rootPath);
         }
-        public void DeleteStory(UserStory story)
+        public void DeleteStory(string id)
         {
-            MarkdownPersistEngine.DeleteUserStory(story);
+            MarkdownPersistEngine.DeleteUserStory(id);
         }
 
         public IEnumerable<UserStory> GetStories()
@@ -36,10 +36,9 @@ namespace MarkdownUserStories.Services
                 .Where(a => status.Contains(a.Status, StringComparer.InvariantCultureIgnoreCase));
         }
 
-        public UserStory GetStory(string role, string want, string why)
-        {
-            UserStory story = new UserStory() { Role = role, Want = want, Why = why };
-            return MarkdownPersistEngine.ReadUserStory(story);
+        public UserStory GetStory(string id)
+        {            
+            return MarkdownPersistEngine.ReadUserStoryFromId(id);
         }
 
         public IEnumerable<UserStory> SaveStories(IEnumerable<UserStory> stories)

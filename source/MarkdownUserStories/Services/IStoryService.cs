@@ -11,9 +11,9 @@ namespace MarkdownUserStories.Services
         IEnumerable<UserStory> GetStories();
         IEnumerable<UserStory> GetStoriesWithStatus(params string[] status);
         IEnumerable<UserStory> SaveStories(IEnumerable<UserStory> stories);
-        UserStory GetStory(string role, string want, string why);
+        UserStory GetStory(string id);
         UserStory SaveStory(UserStory story);
-        void DeleteStory(UserStory story);
+        void DeleteStory(string id);
 
     }
 }

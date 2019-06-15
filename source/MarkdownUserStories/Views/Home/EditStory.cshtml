@@ -12,6 +12,7 @@
     <div class="col-md-4">
         <form asp-action="EditStory">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input hidden asp-for="Id" />
             <div class="form-group">
                 <label asp-for="CreatedOn" class="control-label"></label>
                 <input asp-for="CreatedOn" class="form-control" />

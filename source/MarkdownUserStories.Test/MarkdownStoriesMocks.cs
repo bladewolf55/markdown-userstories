@@ -9,6 +9,7 @@ namespace MarkdownUserStories.Test
 {
     public static class MarkdownStoriesMocks
     {
+        public const string FilenameWithoutExtension = "pqymwz2x";
         public static IEnumerable<UserStory> CurrentStories
         {
             get
@@ -17,6 +18,7 @@ namespace MarkdownUserStories.Test
                 {
                     new UserStory()
                     {
+                        Id = "UserStory1",
                          CreatedOn = DateTime.Parse("1/1/2019"),
                          StartedOn = null,
                          CompletedOn = null,
@@ -31,6 +33,7 @@ namespace MarkdownUserStories.Test
                     },
                     new UserStory()
                     {
+                        Id = "UserStory2",
                          CreatedOn = DateTime.Parse("2/1/2019"),
                          StartedOn = DateTime.Parse("2/2/2019"),
                          CompletedOn = null,
@@ -45,6 +48,7 @@ namespace MarkdownUserStories.Test
                     },
                     new UserStory()
                     {
+                        Id = "UserStory3",
                          CreatedOn = DateTime.Parse("3/1/2019 13:00"),
                          StartedOn = DateTime.Parse("3/2/2019 14:00"),
                          CompletedOn = DateTime.Parse("3/3/2019 15:00"),
@@ -70,6 +74,7 @@ namespace MarkdownUserStories.Test
             {
                 return new UserStory()
                 {
+                    Id = "",
                     CreatedOn = DateTime.Now,
                     StartedOn = null,
                     CompletedOn = null,
@@ -92,6 +97,10 @@ namespace MarkdownUserStories.Test
             {
                 return new UserStory()
                 {
+                    // This is the result of Path.GetFileNameWithoutExtension(Path.GetRandomFileName())
+                    // pqymwz2x
+                    // Note it still works with 8.3 file names!
+                    Id = FilenameWithoutExtension,
                     CreatedOn = DateTime.Parse("1/1/2001"),
                     StartedOn = DateTime.Parse("2/1/2002"),
                     CompletedOn = DateTime.Parse("3/1/2003"),
@@ -125,6 +134,7 @@ No doubt it'll just be the usual babble.",
             {
                 var userStory = FullUserStory;
                 return $@"---
+Id: {FilenameWithoutExtension}
 CreatedOn: 2001-01-01 07:00:00Z
 StartedOn: 2002-02-01 07:00:00Z
 CompletedOn: 2003-03-01 07:00:00Z
@@ -148,7 +158,7 @@ Estimate: {userStory.Estimate}
 
 ## Acceptance Criteria
 {userStory.AcceptanceCriteria}
-";               
+";
             }
         }
     }

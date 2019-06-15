@@ -85,8 +85,8 @@
                 @Html.DisplayFor(modelItem => item.AcceptanceCriteria)
             </td>
             <td>
-                @Html.ActionLink("Edit", "EditStory", new {role=item.Role, want=item.Want, why=item.Why }) |
-                @Html.ActionLink("Delete", "DeleteStory", new {role=item.Role, want=item.Want, why=item.Why })
+                @Html.ActionLink("Edit", "EditStory", new {id = item.Id }) |
+                @Html.ActionLink("Delete", "DeleteStory", new {id = item.Id })
             </td>
         </tr>
 }

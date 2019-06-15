@@ -70,7 +70,7 @@ namespace MarkdownUserStories.Test
         }
 
 
-        public void DeleteStory(UserStory story)
+        public void DeleteStory(string id)
         {
             CalledMethods.Increment(System.Reflection.MethodBase.GetCurrentMethod().Name);
             CheckException();
@@ -90,7 +90,7 @@ namespace MarkdownUserStories.Test
             return UserStories;
         }
 
-        public UserStory GetStory(string role, string want, string why)
+        public UserStory GetStory(string id)
         {
             CalledMethods.Increment(System.Reflection.MethodBase.GetCurrentMethod().Name);
             CheckException();
