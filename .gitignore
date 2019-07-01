@@ -5,6 +5,7 @@
 
 # Repository-specific files
 source/MarkdownUserStories/AppData/
+publish.lnk
 
 # User-specific files
 *.rsuser
