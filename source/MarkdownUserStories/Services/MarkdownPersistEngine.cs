@@ -65,7 +65,7 @@ namespace MarkdownUserStories.Services
         public static IEnumerable<UserStory> GetUserStories()
         {
             List<UserStory> stories = new List<UserStory>();
-            foreach (string filePath in Directory.GetFiles(RootFolderPath))
+            foreach (string filePath in Directory.GetFiles(RootFolderPath,"*.md"))
             {
                 stories.Add(ReadUserStoryFromPath(filePath));
             }
