@@ -13,37 +13,13 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.CreatedOn)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StartedOn)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CompletedOn)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.Status)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Sequence)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Estimate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Role)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Want)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Why)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Discussion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AcceptanceCriteria)
+                Value
             </th>
             <th></th>
         </tr>
@@ -52,37 +28,13 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.CreatedOn)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartedOn)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CompletedOn)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.Status)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Sequence)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Estimate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Role)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Want)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Why)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Discussion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AcceptanceCriteria)
+                As a @item.Role, @item.Want
             </td>
             <td>
                 @Html.ActionLink("Edit", "EditStory", new {id = item.Id }) |
