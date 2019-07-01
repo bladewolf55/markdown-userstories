@@ -21,7 +21,26 @@ namespace MarkdownUserStories.Controllers
 
         public IActionResult Index()
         {
-            IEnumerable<UserStory> model = _storyService.GetStories();
+            IEnumerable<UserStory> model = _storyService.GetStories()
+                .OrderByDescending(a =>
+                    {
+                        switch (a.Status.ToLower())
+                        {
+                            case "backlog": return 1;
+                            case "in process": return 2;
+                            case "done": return 3;
+                            default: return 0;
+                        }
+                    }
+                )
+                .ThenByDescending(a =>
+                    //Done is always sorted by date
+                    a.Status.ToLower() == "done" ? 0 : a.Sequence
+                )
+                .ThenByDescending(a => a.CompletedOn)
+                .ThenByDescending(a => a.StartedOn)
+                .ThenByDescending(a => a.CreatedOn)
+                ;
             return View(model);
         }
 
