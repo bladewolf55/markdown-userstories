@@ -25,7 +25,7 @@
         @Html.DisplayNameFor(model => model.Sequence)
       </th>
       <th>
-        Value
+        Value (hover to see Id and Why)
       </th>
       <th></th>
     </tr>
@@ -40,7 +40,7 @@
         <td>
           @Html.DisplayFor(modelItem => item.Sequence)
         </td>
-        <td>
+        <td title="Id: @item.Id Why: @item.Why">
           As a @item.Role, @item.Want
         </td>
         <td>

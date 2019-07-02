@@ -10,68 +10,74 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="EditStory">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input hidden asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="CreatedOn" class="control-label"></label>
-                <input asp-for="CreatedOn" class="form-control" />
-                <span asp-validation-for="CreatedOn" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StartedOn" class="control-label"></label>
-                <input asp-for="StartedOn" class="form-control" />
-                <span asp-validation-for="StartedOn" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CompletedOn" class="control-label"></label>
-                <input asp-for="CompletedOn" class="form-control" />
-                <span asp-validation-for="CompletedOn" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Sequence" class="control-label"></label>
-                <input asp-for="Sequence" class="form-control" />
-                <span asp-validation-for="Sequence" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Estimate" class="control-label"></label>
-                <input asp-for="Estimate" class="form-control" />
-                <span asp-validation-for="Estimate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Role" class="control-label"></label>
-                <input asp-for="Role" class="form-control" />
-                <span asp-validation-for="Role" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Want" class="control-label"></label>
-                <input asp-for="Want" class="form-control" />
-                <span asp-validation-for="Want" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Why" class="control-label"></label>
-                <input asp-for="Why" class="form-control" />
-                <span asp-validation-for="Why" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Discussion" class="control-label"></label>
-                <input asp-for="Discussion" class="form-control" />
-                <span asp-validation-for="Discussion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AcceptanceCriteria" class="control-label"></label>
-                <input asp-for="AcceptanceCriteria" class="form-control" />
-                <span asp-validation-for="AcceptanceCriteria" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+      <form asp-action="EditStory">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input hidden asp-for="Id" />
+
+        <div class="form-group">
+          <label class="control-label">Id: </label>
+          <span>@Model.Id</span>
+        </div>
+
+        <div class="form-group">
+          <label asp-for="CreatedOn" class="control-label"></label>
+          <input asp-for="CreatedOn" class="form-control" />
+          <span asp-validation-for="CreatedOn" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+          <label asp-for="StartedOn" class="control-label"></label>
+          <input asp-for="StartedOn" class="form-control" />
+          <span asp-validation-for="StartedOn" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+          <label asp-for="CompletedOn" class="control-label"></label>
+          <input asp-for="CompletedOn" class="form-control" />
+          <span asp-validation-for="CompletedOn" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+          <label asp-for="Status" class="control-label"></label>
+          <input asp-for="Status" class="form-control" />
+          <span asp-validation-for="Status" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+          <label asp-for="Sequence" class="control-label"></label>
+          <input asp-for="Sequence" class="form-control" />
+          <span asp-validation-for="Sequence" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+          <label asp-for="Estimate" class="control-label"></label>
+          <input asp-for="Estimate" class="form-control" />
+          <span asp-validation-for="Estimate" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+          <label asp-for="Role" class="control-label"></label>
+          <input asp-for="Role" class="form-control" />
+          <span asp-validation-for="Role" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+          <label asp-for="Want" class="control-label"></label>
+          <input asp-for="Want" class="form-control" />
+          <span asp-validation-for="Want" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+          <label asp-for="Why" class="control-label"></label>
+          <input asp-for="Why" class="form-control" />
+          <span asp-validation-for="Why" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+          <label asp-for="Discussion" class="control-label"></label>
+          <input asp-for="Discussion" class="form-control" />
+          <span asp-validation-for="Discussion" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+          <label asp-for="AcceptanceCriteria" class="control-label"></label>
+          <input asp-for="AcceptanceCriteria" class="form-control" />
+          <span asp-validation-for="AcceptanceCriteria" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+          <input type="submit" value="Save" class="btn btn-primary" />
+        </div>
+      </form>
     </div>
 </div>
 
