@@ -52,6 +52,21 @@ namespace MarkdownUserStories.Services
 
         public UserStory SaveStory(UserStory story)
         {
+            UserStory oldStory = null;
+            try
+            {
+                oldStory = GetStory(story.Id);
+            }
+            catch { }
+            //BusinessRule: Set Sequence to 1 when Done
+            //TODO: Don't use explicit string.
+            string oldStatus = oldStory?.Status.ToLower();
+            string newStatus = story.Status.ToLower();
+            if (newStatus == "done" && newStatus != oldStatus)
+            {
+                story.Sequence = 1;
+            }
+
             MarkdownPersistEngine.WriteUserStory(story);
             return story;
         }
