@@ -1,46 +1,173 @@
 ﻿@model IEnumerable<MarkdownUserStories.Models.UserStory>
 
 @{
-    ViewData["Title"] = "Index";
+  ViewData["Title"] = "Index";
 }
 
 <h1>Index</h1>
+<p id="statusFilters">
+  <span>Status Filter</span><br />
+  <input id="statusDone" type="checkbox" onclick="main.filterAllStatuses();" /> Hide Done &nbsp;&nbsp;&nbsp;&nbsp;
+  <input id="statusInProcess" type="checkbox" onclick="main.filterAllStatuses();" /> Hide In Process &nbsp;&nbsp;&nbsp;&nbsp;
+  <input id="statusBacklog" type="checkbox" onclick="main.filterAllStatuses();" /> Hide Backlog &nbsp;&nbsp;&nbsp;&nbsp;
+</p>
 
 <p>
-    <a asp-action="AddStory">Add Story</a>
+  <a asp-action="AddStory">Add Story</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Sequence)
-            </th>
-            <th>
-                Value
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Sequence)
-            </td>
-            <td>
-                As a @item.Role, @item.Want
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "EditStory", new {id = item.Id }) |
-                @Html.ActionLink("Delete", "DeleteStory", new {id = item.Id })
-            </td>
-        </tr>
-}
-    </tbody>
+<table id="story-list" class="table">
+  <thead>
+    <tr>
+      <th>
+        @Html.DisplayNameFor(model => model.Status)
+      </th>
+      <th>
+        @Html.DisplayNameFor(model => model.Sequence)
+      </th>
+      <th>
+        Value
+      </th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach (var item in Model)
+    {
+      <tr>
+        <td>
+          @Html.DisplayFor(modelItem => item.Status)
+        </td>
+        <td>
+          @Html.DisplayFor(modelItem => item.Sequence)
+        </td>
+        <td>
+          As a @item.Role, @item.Want
+        </td>
+        <td>
+          @Html.ActionLink("Edit", "EditStory", new { id = item.Id }) |
+          @Html.ActionLink("Delete", "DeleteStory", new { id = item.Id })
+        </td>
+      </tr>
+    }
+  </tbody>
 </table>
+
+<script>
+
+  (function (main) {
+    //Needs to be at top so it loads first.
+    //The checkbox events will fire before this whole script is run.
+    var namespace = "SoftwareMeadows.MDUS.";
+
+    //API
+    main.filterStatus = filterStatus;
+    main.filterAllStatuses = filterAllStatuses;
+
+    //Properties
+    var constDone = "Done";
+    var constInProcess = "In Process";
+    var constBacklog = "Backlog";
+    var statusFilters = document.getElementById("statusFilters").getElementsByTagName("input");
+    var hideDone = document.getElementById("statusDone");
+    var hideInProcess = document.getElementById("statusInProcess");
+    var hideBacklog = document.getElementById("statusBacklog");
+
+    //OnLoad
+    loadStatusFilter();
+    filterAllStatuses();
+
+    //functions
+
+    function filterAllStatuses() {
+      filterStatus(hideDone, constDone);
+      filterStatus(hideInProcess, constInProcess);
+      filterStatus(hideBacklog, constBacklog);
+    }
+
+    function filterStatus(e, status) {
+      console.log('filter');
+      var table = document.getElementById("story-list");
+      var tbody = table.getElementsByTagName("tbody")[0];
+      var rows = tbody.getElementsByTagName("tr");
+
+      for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        toggleRowStatus(row, status, e.checked);
+      }
+      saveStatusFilter();
+    }
+
+    function getStatusColumnIndex() {
+      var table = document.getElementById("story-list");
+      var thead = table.getElementsByTagName("thead")[0];
+      var rows = thead.getElementsByTagName("th");
+      for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        var value = row.innerHTML.trim();
+        if (value.toLowerCase() == "status") {
+          return i;
+        }
+      }
+      return -1;
+    }
+
+    function toggleRowStatus(row, status, hide) {
+      var statusColumnIndex = getStatusColumnIndex();
+      if (statusColumnIndex < 0) {
+        throw "Cannot filter. There is no column named Status."
+      }
+      var value = row.getElementsByTagName("td")[statusColumnIndex].innerHTML.trim();;
+      if (value == status) {
+        if (hide) {
+          row.style.display = "none";
+        }
+        else {
+          row.style.display = "";
+        }
+      }
+    }
+
+    function saveStatusFilter() {
+      var days = 365;
+      setCookie("hideDone", statusDone.checked, days);
+      setCookie("hideInProgress", statusInProcess.checked, days);
+      setCookie("hideBacklog", statusBacklog.checked, days);
+    }
+
+    function loadStatusFilter() {
+      statusDone.checked = getCookie("hideDone") == "true";
+      statusInProcess.checked = getCookie("hideInProgress") == "true";
+      statusBacklog.checked = getCookie("hideBacklog") == "true";
+    }
+
+    //Cookie functions https://www.w3schools.com/js/js_cookies.asp
+    function setCookie(cname, cvalue, exdays) {
+      var d = new Date();
+      d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+      var expires = "expires=" + d.toUTCString();
+      document.cookie = namespace + cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+
+    function getCookie(cname) {
+      var name = namespace + cname + "=";
+      var decodedCookie = decodeURIComponent(document.cookie);
+      var ca = decodedCookie.split(';');
+      for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+          return c.substring(name.length, c.length);
+        }
+      }
+      return "";
+    }
+
+  })(window.main = window.main || {})
+
+</script>
+
+
+
+

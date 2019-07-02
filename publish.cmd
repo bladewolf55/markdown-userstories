@@ -1,0 +1,1 @@
+dotnet publish "source\MarkdownUserStories\MarkdownUserStories.csproj" /p:PublishProfile=LocalWebDeploy"
