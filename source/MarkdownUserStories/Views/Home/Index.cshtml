@@ -8,6 +8,7 @@
 <p id="statusFilters">
   <span>Status Filter</span><br />
   <input id="statusDone" type="checkbox" onclick="main.filterAllStatuses();" /> Hide Done &nbsp;&nbsp;&nbsp;&nbsp;
+  <input id="statusWaiting" type="checkbox" onclick="main.filterAllStatuses();" /> Hide Waiting &nbsp;&nbsp;&nbsp;&nbsp;
   <input id="statusInProcess" type="checkbox" onclick="main.filterAllStatuses();" /> Hide In Process &nbsp;&nbsp;&nbsp;&nbsp;
   <input id="statusBacklog" type="checkbox" onclick="main.filterAllStatuses();" /> Hide Backlog &nbsp;&nbsp;&nbsp;&nbsp;
 </p>
@@ -65,10 +66,12 @@
 
     //Properties
     var constDone = "Done";
+    var constWaiting = "Waiting";
     var constInProcess = "In Process";
     var constBacklog = "Backlog";
     var statusFilters = document.getElementById("statusFilters").getElementsByTagName("input");
     var hideDone = document.getElementById("statusDone");
+    var hideWaiting = document.getElementById("statusWaiting");
     var hideInProcess = document.getElementById("statusInProcess");
     var hideBacklog = document.getElementById("statusBacklog");
 
@@ -80,6 +83,7 @@
 
     function filterAllStatuses() {
       filterStatus(hideDone, constDone);
+      filterStatus(hideWaiting, constWaiting);
       filterStatus(hideInProcess, constInProcess);
       filterStatus(hideBacklog, constBacklog);
     }
@@ -130,12 +134,14 @@
     function saveStatusFilter() {
       var days = 365;
       setCookie("hideDone", statusDone.checked, days);
+      setCookie("hideWaiting", statusWaiting.checked, days);
       setCookie("hideInProgress", statusInProcess.checked, days);
       setCookie("hideBacklog", statusBacklog.checked, days);
     }
 
     function loadStatusFilter() {
       statusDone.checked = getCookie("hideDone") == "true";
+      statusWaiting.checked = getCookie("hideWaiting") == "true";
       statusInProcess.checked = getCookie("hideInProgress") == "true";
       statusBacklog.checked = getCookie("hideBacklog") == "true";
     }
