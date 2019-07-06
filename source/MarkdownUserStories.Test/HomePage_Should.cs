@@ -8,6 +8,7 @@ using Xunit;
 using FluentAssertions;
 using MarkdownUserStories.Controllers;
 using MarkdownUserStories.Models;
+using MarkdownUserStories.ViewModels;
 using MarkdownUserStories.Services;
 
 namespace MarkdownUserStories.Test
@@ -82,7 +83,7 @@ namespace MarkdownUserStories.Test
         {
             // arrange
             var controller = GetHomeController();
-            var model = MarkdownStoriesMocks.NewStory;
+            var model = MarkdownStoriesMocks.NewStoryEdit;
             controller.ViewData.ModelState.AddModelError("Role", "Role cannot be empty.");
 
             // act
@@ -123,7 +124,7 @@ namespace MarkdownUserStories.Test
         {
             // arrange
             var controller = GetHomeController();
-            var model = MarkdownStoriesMocks.NewStory;
+            var model = MarkdownStoriesMocks.NewStoryEdit;
 
             // act
             var result = controller.AddStory(model);
@@ -154,7 +155,7 @@ namespace MarkdownUserStories.Test
         {
             // arrange
             var controller = GetHomeController();
-            var model = MarkdownStoriesMocks.CurrentStories.First();
+            var model = MarkdownStoriesMocks.CurrentStoriesEdit.First();
             _storyService.UserStory = model;
 
             // act
@@ -171,7 +172,7 @@ namespace MarkdownUserStories.Test
         {
             // arrange
             var controller = GetHomeController();
-            var model = MarkdownStoriesMocks.NewStory;
+            var model = MarkdownStoriesMocks.NewStoryEdit;
 
             // act
             var result = controller.AddStory(model);
@@ -188,7 +189,7 @@ namespace MarkdownUserStories.Test
         {
             // arrange
             var controller = GetHomeController();
-            var model = MarkdownStoriesMocks.NewStory;
+            var model = MarkdownStoriesMocks.NewStoryEdit;
 
             // act
             var result = controller.EditStory(model);
@@ -275,7 +276,7 @@ namespace MarkdownUserStories.Test
             var controller = GetHomeController();
 
             // act
-            var result = controller.UpdateStories(MarkdownStoriesMocks.CurrentStories);
+            var result = controller.UpdateStories(MarkdownStoriesMocks.CurrentStoriesEdit);
 
             // assert
             result.Should().BeOfType<OkResult>();
@@ -288,7 +289,7 @@ namespace MarkdownUserStories.Test
             var controller = GetHomeController();
 
             // act
-            var result = controller.UpdateStories(MarkdownStoriesMocks.CurrentStories);
+            var result = controller.UpdateStories(MarkdownStoriesMocks.CurrentStoriesEdit);
 
             // assert
             _storyService.CalledMethods["SaveStories"].Count.Should().Be(1);
@@ -302,7 +303,7 @@ namespace MarkdownUserStories.Test
             _storyService.Exception = new Exception("MyProperty Error1 Error2");
 
             // act
-            var result = controller.UpdateStories(MarkdownStoriesMocks.CurrentStories);
+            var result = controller.UpdateStories(MarkdownStoriesMocks.CurrentStoriesEdit);
 
             // assert
             result.Should().BeOfType<ContentResult>();

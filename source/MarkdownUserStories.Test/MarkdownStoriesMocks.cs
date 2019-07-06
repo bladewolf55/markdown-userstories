@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MarkdownUserStories.Models;
+using MarkdownUserStories.ViewModels;
 using MarkdownUserStories.Services;
 
 namespace MarkdownUserStories.Test
@@ -132,15 +133,15 @@ No doubt it'll just be the usual babble.",
         {
             get
             {
-                var userStory = FullUserStory;
+                var UserStory = FullUserStory;
                 return $@"---
 Id: {FilenameWithoutExtension}
 CreatedOn: 2001-01-01 07:00:00Z
 StartedOn: 2002-02-01 07:00:00Z
 CompletedOn: 2003-03-01 07:00:00Z
-Status: {userStory.Status}
-Sequence: {userStory.Sequence}
-Estimate: {userStory.Estimate}
+Status: {UserStory.Status}
+Sequence: {UserStory.Sequence}
+Estimate: {UserStory.Estimate}
 ---
 ";
             }
@@ -150,17 +151,24 @@ Estimate: {userStory.Estimate}
         {
             get
             {
-                var userStory = FullUserStory;
-                return $@"# As a `{userStory.Role}`, `{userStory.Want}` `{userStory.Why}`
+                var UserStory = FullUserStory;
+                return $@"# As a `{UserStory.Role}`, `{UserStory.Want}` `{UserStory.Why}`
 
 ## Discussion
-{userStory.Discussion}
+{UserStory.Discussion}
 
 ## Acceptance Criteria
-{userStory.AcceptanceCriteria}
+{UserStory.AcceptanceCriteria}
 ";
             }
         }
+
+
+        //------------UserStoryEdit, return the editing version of the UserStory
+        public static UserStoryEdit NewStoryEdit => new UserStoryEdit(NewStory);
+        public static UserStoryEdit FullUserStoryEdit => new UserStoryEdit(FullUserStory);
+        public static IEnumerable<UserStoryEdit> CurrentStoriesEdit => CurrentStories.Select(a => new UserStoryEdit(a));
+
     }
 
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MarkdownUserStories.Models;
+using MarkdownUserStories.ViewModels;
 using MarkdownUserStories.Services;
 using Microsoft.AspNetCore.Hosting;
 
@@ -28,7 +29,8 @@ namespace MarkdownUserStories.Controllers
                         {
                             case "backlog": return 1;
                             case "in process": return 2;
-                            case "done": return 3;
+                            case "waiting":return 3;
+                            case "done": return 4;
                             default: return 0;
                         }
                     }
@@ -47,28 +49,27 @@ namespace MarkdownUserStories.Controllers
         [HttpGet]
         public IActionResult AddStory()
         {
-            return View(new UserStory() { CreatedOn = DateTime.Now });
+            return View(new UserStoryEdit() { CreatedOn = DateTime.Now });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddStory([FromForm]UserStory model)
+        public IActionResult AddStory([FromForm]UserStoryEdit model)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
-
             //Save
             //The service takes care of setting the Sequence property on new models.
-            model = _storyService.SaveStory(model);
+            _storyService.SaveStory(model);
 
             return RedirectToAction(actionName: nameof(Index));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult UpdateStories([FromForm] IEnumerable<UserStory> model)
+        public IActionResult UpdateStories([FromForm] IEnumerable<UserStoryEdit> model)
         {
             try
             {
@@ -105,22 +106,23 @@ namespace MarkdownUserStories.Controllers
         [HttpGet]
         public IActionResult EditStory(string id)
         {
-            UserStory model = _storyService.GetStory(id);
+            UserStory userStory = _storyService.GetStory(id);
+            UserStoryEdit model = new UserStoryEdit(userStory);
+
             return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult EditStory([FromForm]UserStory model)
+        public IActionResult EditStory([FromForm]UserStoryEdit model)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
-
             //Save
             //The service takes care of setting the Sequence property on new models.
-            model = _storyService.SaveStory(model);
+            _storyService.SaveStory(model);
 
             return RedirectToAction(actionName: nameof(Index));
         }
