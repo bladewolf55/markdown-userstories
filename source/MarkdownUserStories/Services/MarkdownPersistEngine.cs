@@ -270,13 +270,13 @@ namespace MarkdownUserStories.Services
                 if (line.StartsWith(valueStartToken)) { foundValue = true; }
                 if (line.StartsWith(discussionStartToken)) { foundValue = false; foundDiscussion = true; continue; }
                 if (line.StartsWith(acceptanceStartToken)) { foundValue = false; foundDiscussion = false; foundAcceptance = true; continue; }
-                if (foundValue) { valueString += (line.Trim()); }
+                if (foundValue) { valueString += (line.Trim()); foundValue = false; }
                 if (foundDiscussion) { discussionString.Add(line.Trim()); }
                 if (foundAcceptance) { acceptanceString.Add(line.Trim()); }
             }
 
             //Parse the value line
-            var tokenValues = valueString.GetListBetween("`", "`").ToArray();
+            var tokenValues = valueString.GetStringsBetween("`", "`").ToArray();
             bodyProperties.Role = tokenValues[0];
             bodyProperties.Want = tokenValues[1];
             if (tokenValues.Length > 2) bodyProperties.Why = tokenValues[2];
@@ -330,7 +330,10 @@ namespace MarkdownUserStories.Services
         /// <param name="startString"></param>
         /// <param name="endString"></param>
         /// <returns></returns>
-        /// <remarks>https://stackoverflow.com/a/41242251/1628707</remarks>
+        /// <remarks>
+        ///     https://stackoverflow.com/a/41242251/1628707
+        ///     Only expects a single occurence.
+        /// </remarks>
         public static string GetStringBetweenUsingNoRegex(this string source, string startString, string endString)
         {
             int Start = 0, End = 0;
@@ -353,8 +356,11 @@ namespace MarkdownUserStories.Services
         /// <param name="startString"></param>
         /// <param name="endString"></param>
         /// <returns></returns>
-        /// <remarks>https://stackoverflow.com/a/13780976/1628707</remarks>
-        public static List<string> GetListBetween(this string source, string startString, string endString)
+        /// <remarks>
+        ///     https://stackoverflow.com/a/13780976/1628707
+        ///     Doesn't allow for empty strings!
+        /// </remarks>
+        public static List<string> GetListBetweenUsingRegEx(this string source, string startString, string endString)
         {
             var results = new List<string>();
 
@@ -369,15 +375,67 @@ namespace MarkdownUserStories.Services
             {
                 results.Add(m.Groups[1].Value);
             }
-
+            
             return results;
         }
 
         // Define other methods and classes here
-        public static string GetStringBetween(this string source, string startString, string endString)
+        public static string JoinStringsBetween(this string source, string startString, string endString)
         {
-            return String.Join(Environment.NewLine, GetListBetween(source, startString, endString));
+            return String.Join(Environment.NewLine, GetStringsBetween(source, startString, endString));
         }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="body"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        /// <remarks>
+        ///     https://stackoverflow.com/a/13780780/1628707
+        ///     But, required fixing! So this is really my own code.</remarks>
+        private static List<string> GetStringsBetween(this string body, string start, string end)
+        {
+            List<string> matched = new List<string>();
+
+            int indexStart = 0;
+            int indexEnd = 0;
+
+            bool exit = false;
+            while (!exit)
+            {
+                indexStart = body.IndexOf(start);
+
+                if (indexStart >= 0)
+                {
+                    indexEnd = body.IndexOf(end, indexStart + 1);
+                    //Handle no end delim
+                    if (indexEnd < 0) { throw new ArgumentException($"Supplied ending argument {end} not found"); }
+                    int textStart = indexStart + start.Length;
+                    //Handle empty string
+                    if (textStart == indexEnd)
+                    {
+                        matched.Add("");
+                    }
+                    else
+                    {
+                        string match = body.Substring(textStart, indexEnd - textStart);
+                        matched.Add(match);
+                    }
+                    body = body.Substring(indexEnd + end.Length);
+                }
+                else
+                {
+                    exit = true;
+                }
+            }
+
+            return matched;
+        }
+
+
 
         /// <summary>
         /// Assumes <paramref name="source"/> has YAML delimited by ---\r\n and ---
@@ -386,7 +444,7 @@ namespace MarkdownUserStories.Services
         /// <returns></returns>
         private static string ExtractYaml(this string source, bool keepTokens = false)
         {
-            string yaml = GetStringBetween(source, YamlStartToken, YamlEndToken);
+            string yaml = GetStringBetweenUsingNoRegex(source, YamlStartToken, YamlEndToken);
             if (keepTokens) yaml = YamlStartToken + yaml + YamlEndToken;
             return yaml;
         }
