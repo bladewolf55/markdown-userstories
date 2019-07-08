@@ -49,7 +49,7 @@ namespace MarkdownUserStories.Controllers
         [HttpGet]
         public IActionResult AddStory()
         {
-            return View(new UserStoryEdit() { CreatedOn = DateTime.Now });
+            return View("EditStory", new UserStoryEdit() { CreatedOn = DateTime.Now });
         }
 
         [HttpPost]
@@ -58,7 +58,7 @@ namespace MarkdownUserStories.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(model);
+                return View("EditStory", model);
             }
             //Save
             //The service takes care of setting the Sequence property on new models.

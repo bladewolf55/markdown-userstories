@@ -1,12 +1,14 @@
 ﻿@model MarkdownUserStories.ViewModels.UserStoryEdit
 
 @{
-    ViewData["Title"] = "EditStory";
+    ViewData["Title"] = "User Story";
 }
 
-<h1>EditStory</h1>
+@section Styles {
+  <link rel="stylesheet" href="~/css/edit-story.css" />
+}
 
-<h4>UserStory</h4>
+<h1>User Story</h1>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -16,7 +18,7 @@
 
         <div class="form-group">
           <label class="control-label">Id: </label>
-          <span>@Model.Id</span>
+          <span>@(String.IsNullOrWhiteSpace(Model.Id) ? "NEW" : Model.Id)</span>
         </div>
 
         <div class="form-group">
