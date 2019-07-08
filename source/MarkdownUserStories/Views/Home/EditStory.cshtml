@@ -27,17 +27,17 @@
 
       <div class="row mb-2">
         <div class="col">
-          <label asp-for="CreatedOn" class="control-label"></label>
+          <label asp-for="CreatedOn" class="control-label">Created</label>
           <input asp-for="CreatedOn" class="form-control" />
           <span asp-validation-for="CreatedOn" class="text-danger"></span>
         </div>
         <div class="col">
-          <label asp-for="StartedOn" class="control-label"></label>
+          <label asp-for="StartedOn" class="control-label">Started</label>
           <input asp-for="StartedOn" class="form-control" />
           <span asp-validation-for="StartedOn" class="text-danger"></span>
         </div>
         <div class="col">
-          <label asp-for="CompletedOn" class="control-label"></label>
+          <label asp-for="CompletedOn" class="control-label">Completed</label>
           <input asp-for="CompletedOn" class="form-control" />
           <span asp-validation-for="CompletedOn" class="text-danger"></span>
         </div>
@@ -59,21 +59,24 @@
           <span asp-validation-for="Sequence" class="text-danger"></span>
         </div>
       </div>
-      <div class="form-group">
-        <label asp-for="Role" class="control-label"></label>
-        <input asp-for="Role" class="form-control" />
-        <span asp-validation-for="Role" class="text-danger"></span>
-      </div>
-      <div class="form-group">
-        <label asp-for="Want" class="control-label"></label>
-        <input asp-for="Want" class="form-control" />
-        <span asp-validation-for="Want" class="text-danger"></span>
-      </div>
-      <div class="form-group">
-        <label asp-for="Why" class="control-label"></label>
-        <input asp-for="Why" class="form-control" />
-        <span asp-validation-for="Why" class="text-danger"></span>
-      </div>
+      <fieldset id="Value">
+        <legend>Value</legend>
+        <div class="form-group">
+          <label asp-for="Role" class="control-label">As A...</label>
+          <input asp-for="Role" class="form-control" placeholder="Role" />
+          <span asp-validation-for="Role" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+          <label asp-for="Want" class="sr-only control-label"></label>
+          <input asp-for="Want" class="form-control" placeholder="I want/need..." />
+          <span asp-validation-for="Want" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+          <label asp-for="Why" class="sr-only control-label"></label>
+          <input asp-for="Why" class="form-control" placeholder="Because/so that..." />
+          <span asp-validation-for="Why" class="text-danger"></span>
+        </div>
+      </fieldset>
       <div class="form-group">
         <label asp-for="Discussion" class="control-label"></label>
         <textarea asp-for="Discussion" class="form-control"></textarea>

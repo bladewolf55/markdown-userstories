@@ -1,3 +1,5 @@
 ﻿#Estimate, #Sequence { width: 100px;}
 #Role {max-width:340px;}
 #Discussion, #AcceptanceCriteria {height:175px;}
+#Value {border: 1px solid lightgray; padding: 10px; }
+#Value legend {font-size:unset; width:auto; padding:3px;}
