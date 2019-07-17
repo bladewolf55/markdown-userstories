@@ -20,6 +20,7 @@ namespace MarkdownUserStories.Test
         public Homepage_Should()
         {
             _storyService.UserStories = MarkdownStoriesMocks.CurrentStories;
+            MarkdownTestFileHelpers.RefreshTestFiles();
         }
 
         private HomeController GetHomeController()
@@ -165,7 +166,6 @@ namespace MarkdownUserStories.Test
             result.Should().BeOfType<RedirectToActionResult>();
             _storyService.CalledMethods["SaveStory"].Count.Should().Be(1);
         }
-
 
         [Fact]
         public void On_save_with_no_errors_redirect_to_Index()

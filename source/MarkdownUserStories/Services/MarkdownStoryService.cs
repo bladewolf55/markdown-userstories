@@ -52,6 +52,7 @@ namespace MarkdownUserStories.Services
 
         public UserStory SaveStory(UserStory story)
         {
+            DateTime now = DateTime.Now;
             UserStory oldStory = null;
             try
             {
@@ -62,9 +63,21 @@ namespace MarkdownUserStories.Services
             //TODO: Don't use explicit string.
             string oldStatus = oldStory?.Status.ToLower();
             string newStatus = story.Status.ToLower();
-            if (newStatus == "done" && newStatus != oldStatus)
+
+            //BusinessRule: Set dates depending on status
+            if (newStatus != oldStatus)
             {
-                story.Sequence = 1;
+                if (newStatus == "backlog") { story.StartedOn = null; story.CompletedOn = null; }
+                if (newStatus == "in process" | newStatus == "waiting") {
+                    if (!story.StartedOn.HasValue) story.StartedOn = now;
+                    story.CompletedOn = null;
+                }
+                if (newStatus == "done")
+                {
+                    if (!story.StartedOn.HasValue) story.StartedOn = now;
+                    if (!story.CompletedOn.HasValue) story.CompletedOn = now;
+                    story.Sequence = 1;
+                }
             }
 
             MarkdownPersistEngine.WriteUserStory(story);
