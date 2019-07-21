@@ -22,18 +22,31 @@ namespace MarkdownUserStories.Controllers
 
         public IActionResult Index()
         {
+            
+            return View(GetStoriesModel());
+        }
+
+        [HttpGet]
+        public IActionResult GetStoryRows()
+        {
+            return PartialView("_StoryRows", GetStoriesModel());
+
+        }
+
+        private IEnumerable<UserStory> GetStoriesModel()
+        {
             IEnumerable<UserStory> model = _storyService.GetStories()
                 .OrderByDescending(a =>
+                {
+                    switch (a.Status.ToLower())
                     {
-                        switch (a.Status.ToLower())
-                        {
-                            case "backlog": return 1;
-                            case "in process": return 2;
-                            case "waiting":return 3;
-                            case "done": return 4;
-                            default: return 0;
-                        }
+                        case "backlog": return 1;
+                        case "in process": return 2;
+                        case "waiting": return 3;
+                        case "done": return 4;
+                        default: return 0;
                     }
+                }
                 )
                 .ThenByDescending(a =>
                     //Done is always sorted by date
@@ -43,8 +56,10 @@ namespace MarkdownUserStories.Controllers
                 .ThenByDescending(a => a.StartedOn)
                 .ThenByDescending(a => a.CreatedOn)
                 ;
-            return View(model);
+            return model;
         }
+
+
 
         [HttpGet]
         public IActionResult AddStory()
@@ -66,6 +81,7 @@ namespace MarkdownUserStories.Controllers
 
             return RedirectToAction(actionName: nameof(Index));
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

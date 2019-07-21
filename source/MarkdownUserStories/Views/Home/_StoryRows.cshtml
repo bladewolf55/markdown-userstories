@@ -1,0 +1,40 @@
+﻿@model IEnumerable<MarkdownUserStories.Models.UserStory>
+
+  <table id="story-list" class="table sortable">
+    <thead>
+      <tr>
+        <th></th>
+        <th>
+          @Html.DisplayNameFor(model => model.Status)
+        </th>
+        <th>
+          @Html.DisplayNameFor(model => model.Sequence)
+        </th>
+        <th>
+          Value (hover to see Id and Why)
+        </th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var item in Model)
+      {
+        <tr class="item">
+          <td style="cursor:move;">|||</td>
+          <td>
+            @Html.DisplayFor(modelItem => item.Status)
+          </td>
+          <td>
+            @Html.DisplayFor(modelItem => item.Sequence)
+          </td>
+          <td title="Id: @item.Id Why: @item.Why">
+            As a @item.Role, @item.Want
+          </td>
+          <td>
+            @Html.ActionLink("Edit", "EditStory", new { id = item.Id }) |
+            @Html.ActionLink("Delete", "DeleteStory", new { id = item.Id })
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>

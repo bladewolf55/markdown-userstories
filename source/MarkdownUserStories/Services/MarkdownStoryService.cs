@@ -43,11 +43,36 @@ namespace MarkdownUserStories.Services
 
         public IEnumerable<UserStory> SaveStories(IEnumerable<UserStory> stories)
         {
+            // BusinessRule: Each Status is resequenced in descending order
+            // with particular statuses always setting sequence to 1
+
+            var statuses = stories.Select(a => a.Status);
+            foreach(string status in statuses)
+            {
+                var filteredStories = stories.Where(a => a.Status == status);
+                ResequenceByStatus(status, ref filteredStories );
+            }
+
             foreach(var story in stories)
             {
                 SaveStory(story);
             }
             return stories;
+        }
+
+        private void ResequenceByStatus(string status, ref IEnumerable<UserStory> stories)
+        {
+            if (status.Equals("Done", StringComparison.InvariantCultureIgnoreCase))
+            {
+                foreach(var story in stories) { story.Sequence = 1; }
+            }
+            //Default is to sort descending.
+            int count = stories.Count();
+            foreach (var story in stories)
+            {
+                story.Sequence = count;
+                count--;
+            }
         }
 
         public UserStory SaveStory(UserStory story)
